@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr Almonds Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h2>Chat with Dr Almonds</h2>
+    <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="50" height="50"><br>
+    <div>You have uploaded a data file which has the first few rows shown below.</div>
+    <div>{{ dataHead|safe }}</div>
+    <div>What would you like to do with this data?</div> <br>
+    <div id="chatbox">
+        <div id="messages">
+        </div>
+    </div>
+    <form id="message-form">
+        <input type="text" id="user_input" placeholder="Type your message" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        
+        $(document).ready(function() {
+            $("#message-form").submit(function(event) {
+                event.preventDefault();
+                let user_input = $("#user_input").val();
+                $.post("/chat", {user_input: user_input}, function(data) {
+                    let user_msg = "<p><strong>You:</strong> " + data.user_input + "</p>";
+                    let bot_msg = "<p><strong>Dr Almonds:</strong> " + data.bot_message + "</p>";
+                    $("#messages").append(user_msg).append(bot_msg);
+                });
+                $("#user_input").val('');
+            });
+        });
+
+    </script>
+</body>
+</html>

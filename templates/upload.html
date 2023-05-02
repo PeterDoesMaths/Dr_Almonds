@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Hi, I'm Dr Almonds, a language model nailing data science. If you ask me, that's nuts!</h1><br>
+    <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="200" height="200"><br>
+    <h2>Upload your data file so I can help analyse it</h2>
+    <form id="upload-form">
+        <label for="data_file">Upload a file (CSV, TXT, XLSX):</label>
+        <input type="file" id="data_file" accept=".csv,.txt,.xlsx" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        $("#upload-form").submit(function(event) {
+            event.preventDefault();
+            let data_file = $("#data_file").prop("files")[0];
+            let formData = new FormData();
+            formData.append("data_file", data_file);
+
+            $.ajax({
+                url: "/upload",
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: "POST",
+                success: function(data) {
+                    window.location.href = "/chat";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
