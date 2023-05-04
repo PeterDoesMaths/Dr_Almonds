@@ -24,7 +24,7 @@ def get_completion_from_messages(messages):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages,
-        temperature=0, # this is the degree of randomness of the model's output
+        temperature=0.5, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message.content
 
@@ -70,7 +70,13 @@ def chat_page():
     # Display the first five rows of the data
     dataHead = data.head().to_html()
 
-    return render_template('index.html', dataHead=dataHead)
+    # make an interpretation of the data set and give suggestions on how to analyse it
+    data =  pd.DataFrame.to_string(data.head())
+    prompt = f"I have uploaded the data set: \n ```{data}``` \n What do you believe is contained in the data? How can I analyse it."
+
+    response = process_input(prompt)
+
+    return render_template('index.html', dataHead=dataHead, response=response)
 
 @app.route('/chat', methods=['POST'])
 def chat():

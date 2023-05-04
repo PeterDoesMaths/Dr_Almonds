@@ -10,8 +10,9 @@
     <h2>Chat with Dr Almonds</h2>
     <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="50" height="50"><br>
     <div>You have uploaded a data file which has the first few rows shown below.</div>
-    <div>{{ dataHead|safe }}</div>
-    <div>What would you like to do with this data?</div> <br>
+    <div>{{ dataHead|safe }}</div> <br>
+    <!-- <div>What would you like to do with this data?</div> <br> -->
+    <div>{{ response }}</div> <br>
     <div id="chatbox">
         <div id="messages">
         </div>
