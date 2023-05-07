@@ -22,7 +22,7 @@ context = []
 
 def get_completion_from_messages(messages):
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=messages,
         temperature=0.5, # this is the degree of randomness of the model's output
     )
@@ -72,7 +72,7 @@ def chat_page():
 
     # make an interpretation of the data set and give suggestions on how to analyse it
     data =  pd.DataFrame.to_string(data.head())
-    prompt = f"I have uploaded the data set: \n ```{data}``` \n What do you believe is contained in the data? How can I analyse it."
+    prompt = f"I have uploaded the data set with the header: \n ```{data}``` \n Suggest ways to analyse the data."
 
     response = process_input(prompt)
 
@@ -116,7 +116,7 @@ def chat():
             try:
                 exec(match)
             except Exception as e:
-                 response += f"<br><br><b>Error<b>: There was an error running the code. <br> {e}<br> Ask another question."
+                 response += f"<br><br><b>Error</b>: There was an error running the code. <br> {e}<br>"
                  return jsonify({'user_input': user_input, 'bot_message': response})
 
         # Reset stdout and get captured output
@@ -129,8 +129,7 @@ def chat():
         interp = get_completion_from_messages(context)
 
         # Append interp to response
-        #response += '<br><br><b>Interpretation:</b><br>' + interp
-        response += f"<br><br><b>Code Output:</b><br> {code_output} <br><br><b>Interpretation:</b><br> {interp}"
+        response += f"<br><br><b>Code Output:</b><br> <pre>{code_output}</pre> <br><br><b>Interpretation:</b><br> {interp}"
 
     return jsonify({'user_input': user_input, 'bot_message': response})
 
