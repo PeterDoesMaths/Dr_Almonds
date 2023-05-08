@@ -11,7 +11,7 @@
     <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="50" height="50"><br>
     <div>You have uploaded a data file which has the first few rows shown below.</div>
     <div>{{ dataHead|safe }}</div> <br>
-    <!-- <div>What would you like to do with this data?</div> <br> -->
+    
     <div>{{ response }}</div> <br>
     <div id="chatbox">
         <div id="messages">
@@ -22,21 +22,48 @@
         <button type="submit">Send</button>
     </form>
 
+    <div id="loading" class="loading" style="display: none;">
+        <div id="loader" class="loader">Loading.</div>
+    </div>
+
     <script>
         
         $(document).ready(function() {
             $("#message-form").submit(function(event) {
                 event.preventDefault();
                 let user_input = $("#user_input").val();
+
+                // Show the loading animation
+                $("#loading").css("display", "flex");
+
                 $.post("/chat", {user_input: user_input}, function(data) {
                     let user_msg = "<p><strong>You:</strong> " + data.user_input + "</p>";
                     let bot_msg = "<p><strong>Dr Almonds:</strong> " + data.bot_message + "</p>";
                     $("#messages").append(user_msg).append(bot_msg);
-                });
+
+                    // Hide the loading animation
+                    $("#loading").css("display", "none");
+                });            
+
                 $("#user_input").val('');
             });
         });
 
+    </script>
+
+    <script>
+    function animateLoadingDots() {
+      const loader = document.getElementById('loader');
+      let dotCount = loader.textContent.split('.').length - 1;
+    
+      setInterval(function() {
+        dotCount = (dotCount + 1) % 4;
+        loader.textContent = 'Loading' + '.'.repeat(dotCount);
+      }, 500); // 500 milliseconds (0.5 seconds) interval
+    }
+    
+    // Call the animateLoadingDots function
+    animateLoadingDots();
     </script>
 </body>
 </html>

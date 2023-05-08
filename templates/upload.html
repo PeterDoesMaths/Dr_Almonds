@@ -16,6 +16,10 @@
         <button type="submit">Upload</button>
     </form>
 
+    <div id="loading" class="loading" style="display: none;">
+        <div id="loader" class="loader">Loading.</div>
+    <div>
+
     <script>
         $("#upload-form").submit(function(event) {
             event.preventDefault();
@@ -34,6 +38,55 @@
                 }
             });
         });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const uploadForm = document.getElementById('upload-form');
+      const loadingDiv = document.getElementById('loading');
+    
+      uploadForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        loadingDiv.style.display = 'flex';
+    
+        const fileInput = document.querySelector('input[type="file"]');
+        const formData = new FormData();
+        formData.append('data_file', fileInput.files[0]);
+    
+        fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = "/chat";
+            } else {
+              alert(data.error);
+              loadingDiv.style.display = 'none';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            loadingDiv.style.display = 'none';
+          });
+      });
+    });
+    </script>
+
+    <script>
+    function animateLoadingDots() {
+      const loader = document.getElementById('loader');
+      let dotCount = loader.textContent.split('.').length - 1;
+    
+      setInterval(function() {
+        dotCount = (dotCount + 1) % 4;
+        loader.textContent = 'Loading' + '.'.repeat(dotCount);
+      }, 500); // 500 milliseconds (0.5 seconds) interval
+    }
+    
+    // Call the animateLoadingDots function
+    animateLoadingDots();
     </script>
 </body>
 </html>
