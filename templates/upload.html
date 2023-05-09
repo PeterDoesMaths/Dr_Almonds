@@ -34,7 +34,8 @@
                 contentType: false,
                 type: "POST",
                 success: function(data) {
-                    window.location.href = "/chat";
+                //    window.location.href = "/chat";
+                window.location.href = "/description";
                 }
             });
         });
@@ -60,7 +61,8 @@
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              window.location.href = "/chat";
+            //   window.location.href = "/chat";
+            window.location.href = "/description";
             } else {
               alert(data.error);
               loadingDiv.style.display = 'none';

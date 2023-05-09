@@ -1,6 +1,6 @@
 import openai
 import json, re
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect, url_for
 import pandas as pd
 
 from io import StringIO
@@ -19,12 +19,14 @@ with open('openaicreds.json') as f:
 
 # Initialize the context variable to store the entire conversation history
 context = []
+descriptions = []
 
 def get_completion_from_messages(messages):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
+        # model="gpt-4",
         messages=messages,
-        temperature=0.5, # this is the degree of randomness of the model's output
+        temperature=0, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message.content
 
@@ -59,6 +61,35 @@ def upload():
         return jsonify({'success': True})
     return jsonify({'error': 'Failed to upload the file'})
 
+@app.route('/description', methods=['GET', 'POST'])
+def description():
+    # Read the data from the "data.csv" file
+    try:
+        data = pd.read_csv('data.csv')
+    except:
+        return jsonify({'error': 'Failed to read the data'})
+    
+    # Get the column names from the data
+    columns = list(data.columns)
+
+    # Display the first five rows of the data
+    dataHead = data.head().to_html()
+
+    # Handle the form submission
+    if request.method == 'POST':
+        global descriptions
+        comment = request.form.get('general_comment', '')
+        descriptions.append(f"General comment: {comment} \n")
+        for column in columns:
+            description = request.form.get(column)
+            if description:
+                descriptions.append(f"{column}: {description} \n")
+            else:
+                descriptions.append(f"{column}: No description provided \n")
+        return redirect(url_for('chat_page'))
+
+    return render_template('description.html', columns=columns, dataHead=dataHead)
+
 @app.route('/chat')
 def chat_page():
     # Read the data from the "data.csv" file
@@ -70,9 +101,13 @@ def chat_page():
     # Display the first five rows of the data
     dataHead = data.head().to_html()
 
+    # get descriptions
+    global descriptions
+    descriptions = ' '.join(descriptions)
+
     # make an interpretation of the data set and give suggestions on how to analyse it
     data =  pd.DataFrame.to_string(data.head())
-    prompt = f"I have uploaded the data set with the header: \n ```{data}``` \n Suggest ways to analyse the data."
+    prompt = f"I have uploaded the data set with the header: \n ```{data}``` \n The variable descpritions are \n ```{descriptions}``` \n Comment on the data and suggest which model to use."
 
     response = process_input(prompt)
 

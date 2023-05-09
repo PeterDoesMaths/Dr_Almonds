@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Column Descriptions</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h2>Dr Almonds</h2>
+    <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="50" height="50"><br>
+    <div>You have uploaded a data file which has the first few rows shown below.</div>
+    <div>{{ dataHead|safe }}</div> <br>
+
+    <h2>Provide descriptions of the variables in the data</h2>
+    <form method="post" action="{{ url_for('description') }}">
+        {% for column in columns %}
+        <label for="{{ column }}">{{ column }}:</label><br>
+        <textarea id="{{ column }}" name="{{ column }}"></textarea><br>
+        {% endfor %}
+        <br>
+        <label for="general_comment">General Comment:</label><br>
+        <textarea id="general_comment" name="general_comment"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="loading" class="loading" style="display: none;">
+        <div id="loader" class="loader">Loading.</div>
+    <div>
+
+    <script>
+    function animateLoadingDots() {
+        const loader = document.getElementById('loader');
+        let dotCount = loader.textContent.split('.').length - 1;
+    
+        setInterval(function() {
+        dotCount = (dotCount + 1) % 4;
+        loader.textContent = 'Loading' + '.'.repeat(dotCount);
+        }, 500); // 500 milliseconds (0.5 seconds) interval
+    }
+    
+    // Call the animateLoadingDots function
+    animateLoadingDots();
+    </script>
+</body>
+</html>
