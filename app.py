@@ -158,13 +158,14 @@ def chat():
         sys.stdout = old_stdout
         code_output = output_buffer.getvalue()
 
-        context.append({"role": "user", "content": f"Running the code you have generated gives the ouput {code_output}.\
-                         Interpret the output to answer {user_input}."})
+        if code_output:
+            context.append({"role": "user", "content": f"Running the code you have generated gives the ouput {code_output}.\
+                            Interpret the output to answer {user_input}."})
 
-        interp = get_completion_from_messages(context)
+            interp = get_completion_from_messages(context)
 
-        # Append interp to response
-        response += f"<br><br><b>Code Output:</b><br> <pre>{code_output}</pre> <br><br><b>Interpretation:</b><br> {interp}"
+            # Append interp to response
+            response += f"<br><br><b>Code Output:</b><br> <pre>{code_output}</pre> <br><br><b>Interpretation:</b><br> {interp}"
 
     return jsonify({'user_input': user_input, 'bot_message': response})
 
