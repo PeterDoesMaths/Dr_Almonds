@@ -16,11 +16,11 @@
     <form method="post" action="{{ url_for('description') }}">
         {% for column in columns %}
         <label for="{{ column }}">{{ column }}:</label><br>
-        <textarea id="{{ column }}" name="{{ column }}"></textarea><br>
+        <textarea id="{{ column }}" name="{{ column }}" rows="5" cols="50"></textarea><br>
         {% endfor %}
         <br>
         <label for="general_comment">General Comment:</label><br>
-        <textarea id="general_comment" name="general_comment"></textarea><br>
+        <textarea id="general_comment" name="general_comment" rows="10" cols="100"></textarea><br>
         <input type="submit" value="Submit">
     </form>
 

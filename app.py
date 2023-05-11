@@ -196,7 +196,7 @@ def chat():
             interp = get_completion_from_messages(context)
 
             # Append interp to response
-            response += f"<br><br><b>Code Output:</b><br> <pre>{code_output}</pre> <br><br><b>Interpretation:</b><br> {interp}"
+            response += f"<br><br><b>Code Output:</b><br> <pre>{code_output}</pre> <br><b>Interpretation:</b><br> {interp}"
 
     return jsonify({'user_input': user_input, 'bot_message': response})
 
