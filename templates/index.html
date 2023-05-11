@@ -12,7 +12,7 @@
     <div>You have uploaded a data file which has the first few rows shown below. I have renamed the data file to "data.csv" for convenience.</div>
     <div>{{ dataHead|safe }}</div> <br>
     
-    <div>{{ response }}</div> <br>
+    <div>{{ response|safe }}</div> <br>
     <div id="chatbox">
         <div id="messages">
         </div>
@@ -39,15 +39,37 @@
                 $.post("/chat", {user_input: user_input}, function(data) {
                     let user_msg = "<p><strong>You:</strong> " + data.user_input + "</p>";
                     let bot_msg = "<p><strong>Dr Almonds:</strong> " + data.bot_message + "</p>";
-                    $("#messages").append(user_msg).append(bot_msg);
 
-                    // Hide the loading animation
-                    $("#loading").css("display", "none");
-                });            
+                    // Check for and display new images
+                    $.get("/static/plots", function(plots) {
+                        let images_html = "";
+                        plots.forEach(function(image) {
+                            if (!imageAlreadyDisplayed(image)) {
+                                images_html += "<img src='/static/plots/" + image + "' alt='Plot' width='400'><br>";
+                                markImageAsDisplayed(image);
+                            }
+                        });
+
+                        $("#messages").append(user_msg).append(bot_msg).append(images_html);
+
+                        // Hide the loading animation
+                        $("#loading").css("display", "none");
+                    });   
+                });         
 
                 $("#user_input").val('');
             });
         });
+
+    // Helper function to check if an image has already been displayed
+    function imageAlreadyDisplayed(imageSrc) {
+        return $("#messages").find("img[src='/static/plots/" + imageSrc + "']").length > 0;
+    }
+
+    // Helper function to mark an image as displayed
+    function markImageAsDisplayed(imageSrc) {
+        $("<span>").attr("data-src", imageSrc).appendTo("#messages");
+    }
 
     </script>
 

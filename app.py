@@ -1,5 +1,5 @@
 import openai
-import json, re
+import json, os, re
 from flask import Flask, request, render_template, jsonify, redirect, url_for
 import pandas as pd
 
@@ -20,6 +20,25 @@ with open('openaicreds.json') as f:
 # Initialize the context variable to store the entire conversation history
 context = []
 descriptions = []
+
+# Clear data.csv file
+with open('data.csv', mode='w', newline='') as file:
+    file.truncate(0)
+
+# Clear plots folder
+for file in os.listdir('static/plots'):
+    os.remove(f'static/plots/{file}')
+
+# replacement code for plots
+replacement_code = '''
+global i
+plt.savefig(f'static\\\\plots\\\\plot_{i}.png')
+plt.clf()
+i += 1
+'''
+
+# initialize the counter for plots
+i = 0
 
 def get_completion_from_messages(messages):
     response = openai.ChatCompletion.create(
@@ -110,6 +129,12 @@ def chat_page():
     prompt = f"I have uploaded the data set with the header: \n ```{data}``` \n The variable descpritions are \n ```{descriptions}``` \n Comment on the data and suggest which model to use."
 
     response = process_input(prompt)
+    ## check if response has python code
+    code_pattern = r'```python(.*?)```'
+    code_matches = re.findall(code_pattern, response, re.DOTALL)
+    if code_matches:
+        # Format code blocks with syntax highlighting
+        response = re.sub(code_pattern, '<pre><code class="language-python">\\1</code></pre>', response, flags=re.DOTALL)
 
     return render_template('index.html', dataHead=dataHead, response=response)
 
@@ -142,13 +167,19 @@ def chat():
     if code_matches:
         # Format code blocks with syntax highlighting
         response = re.sub(code_pattern, '<pre><code class="language-python">\\1</code></pre>', response, flags=re.DOTALL)
-    
-        # Redirect stdout to a StringIO object to capture output
-        old_stdout = sys.stdout
-        sys.stdout = output_buffer = StringIO()
 
         for match in code_matches:
+            # check for plots and save them to disk
+            plot_pattern = r'plt\.show\(\)'
+            plot_matches = re.findall(plot_pattern, match)
+            global replacement_code
+            if plot_matches:
+                match = re.sub(plot_pattern, replacement_code, match)
+
             try:
+                # Redirect stdout to a StringIO object to capture output
+                old_stdout = sys.stdout
+                sys.stdout = output_buffer = StringIO()
                 exec(match)
             except Exception as e:
                  response += f"<br><br><b>Error</b>: There was an error running the code. <br> {e}<br>"
@@ -169,6 +200,11 @@ def chat():
 
     return jsonify({'user_input': user_input, 'bot_message': response})
 
+@app.route('/static/plots')
+def get_plots():
+    plots_dir = 'static/plots'
+    plots = [filename for filename in os.listdir(plots_dir) if filename.endswith('.png')]
+    return jsonify(plots)
 
 if __name__ == '__main__':
     app.run(debug=True)
