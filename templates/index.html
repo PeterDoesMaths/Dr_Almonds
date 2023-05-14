@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr Almonds Chat</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
     <h2>Chat with Dr Almonds</h2>
-    <img src="/static/Dr_Almonds_small.jpg" alt = "Dr Almonds" width="50" height="50"><br>
+    <img src="/static/Dr_Almonds_small.jpg" alt="Dr Almonds" width="50" height="50"><br>
     <div>You have uploaded a data file which has the first few rows shown below. I have renamed the data file to "data.csv" for convenience.</div>
     <div>{{ dataHead|safe }}</div> <br>
     
@@ -27,7 +30,6 @@
     </div>
 
     <script>
-        
         $(document).ready(function() {
             $("#message-form").submit(function(event) {
                 event.preventDefault();
@@ -38,7 +40,7 @@
 
                 $.post("/chat", {user_input: user_input}, function(data) {
                     let user_msg = "<p><strong>You:</strong> " + data.user_input + "</p>";
-                    let bot_msg = "<img src='/static/Dr_Almonds_small.jpg' alt = 'Dr Almonds' width='50' height='50'>" + "<p><strong> Dr Almonds:</strong> " + data.bot_message + "</p>";
+                    let bot_msg = "<img src='/static/Dr_Almonds_small.jpg' alt='Dr Almonds' width='50' height='50'>" + "<p><strong> Dr Almonds:</strong> " + data.bot_message + "</p>";
 
                     // Check for and display new images
                     $.get("/static/plots", function(plots) {
@@ -52,19 +54,24 @@
 
                         $("#messages").append(user_msg).append(bot_msg).append(images_html);
 
+                        // Apply syntax highlighting to code blocks
+                        $('pre code').each(function(i, block) {
+                            hljs.highlightBlock(block);
+                        });
+
                         // Hide the loading animation
                         $("#loading").css("display", "none");
-                    });   
-                });         
+                    });
+                });
 
                 $("#user_input").val('');
             });
         });
 
-    // Helper function to check if an image has already been displayed
-    function imageAlreadyDisplayed(imageSrc) {
-        return $("#messages").find("img[src='/static/plots/" + imageSrc + "']").length > 0;
-    }
+        // Helper function to check if an image has already been displayed
+        function imageAlreadyDisplayed(imageSrc) {
+            return $("#messages").find("img[src='/static/plots/" + imageSrc + "']").length > 0;
+        }
 
     // Helper function to mark an image as displayed
     function markImageAsDisplayed(imageSrc) {
