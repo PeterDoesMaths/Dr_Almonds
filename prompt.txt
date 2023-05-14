@@ -3,5 +3,5 @@ I have uploaded data "data.csv" with the header
 ```dataHead```
 
 I want to know: "userMessage".
-Write code to achieve this task or ask a question about the data if it is not clear what to do.
+If necessary, write code to achieve this task.
 When writing code, make sure to import any necessary libraries, e.g. import numpy as np

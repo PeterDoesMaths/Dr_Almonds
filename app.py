@@ -31,7 +31,6 @@ for file in os.listdir('static/plots'):
 
 # replacement code for plots
 replacement_code = '''
-global i
 plt.savefig(f'static\\\\plots\\\\plot_{i}.png')
 plt.clf()
 i += 1
@@ -45,7 +44,7 @@ def get_completion_from_messages(messages):
         model="gpt-3.5-turbo",
         # model="gpt-4",
         messages=messages,
-        temperature=0, # this is the degree of randomness of the model's output
+        temperature=0.01, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message.content
 
@@ -104,7 +103,7 @@ def description():
             if description:
                 descriptions.append(f"{column}: {description} \n")
             else:
-                descriptions.append(f"{column}: No description provided \n")
+                descriptions.append(f"{column}: No description \n")
         return redirect(url_for('chat_page'))
 
     return render_template('description.html', columns=columns, dataHead=dataHead)
@@ -181,6 +180,8 @@ def chat():
                 old_stdout = sys.stdout
                 sys.stdout = output_buffer = StringIO()
                 exec(match)
+                global i
+                i = 10
             except Exception as e:
                  response += f"<br><br><b>Error</b>: There was an error running the code. <br> {e}<br>"
                  return jsonify({'user_input': user_input, 'bot_message': response})
@@ -191,7 +192,7 @@ def chat():
 
         if code_output:
             context.append({"role": "user", "content": f"Running the code you have generated gives the ouput {code_output}.\
-                            Interpret the output to answer {user_input}."})
+                            Interpret the output to answer {user_input} in no more than 100 words."})
 
             interp = get_completion_from_messages(context)
 

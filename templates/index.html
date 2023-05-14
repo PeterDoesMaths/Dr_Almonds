@@ -38,7 +38,7 @@
 
                 $.post("/chat", {user_input: user_input}, function(data) {
                     let user_msg = "<p><strong>You:</strong> " + data.user_input + "</p>";
-                    let bot_msg = "<p><strong>Dr Almonds:</strong> " + data.bot_message + "</p>";
+                    let bot_msg = "<img src='/static/Dr_Almonds_small.jpg' alt = 'Dr Almonds' width='50' height='50'>" + "<p><strong> Dr Almonds:</strong> " + data.bot_message + "</p>";
 
                     // Check for and display new images
                     $.get("/static/plots", function(plots) {
