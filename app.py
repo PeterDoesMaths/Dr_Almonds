@@ -181,7 +181,7 @@ def chat():
                 sys.stdout = output_buffer = StringIO()
                 exec(match)
                 global i
-                i = 10
+                i = i+10
             except Exception as e:
                  response += f"<br><br><b>Error</b>: There was an error running the code. <br> {e}<br>"
                  return jsonify({'user_input': user_input, 'bot_message': response})
